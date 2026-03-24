@@ -1,3 +1,5 @@
+> **Part of the [Radar Suite](https://github.com/Terryc21/radar-suite)** — get all 5 audit skills in one install. If you just want this skill, keep reading.
+
 # Capstone Radar
 
 > Unified A-F grading and ship/no-ship decisions for the 5-skill radar family.
@@ -7,6 +9,15 @@
 Capstone Radar is the aggregator and gap filler for the radar family. It combines results from 4 companion audit skills with its own security, testing, and code quality scans, then grades your entire codebase on one unified scale and tells you whether it's safe to ship.
 
 It owns 5 domains that the companion skills don't cover (security basics, test health, code hygiene, dependency health, build health). For everything else — model correctness, navigation paths, data safety, visual quality — it consumes findings from the companion skills rather than re-scanning.
+
+### What does this actually check?
+
+Capstone Radar gives your app an overall grade (A through F) and a release recommendation:
+- **Ship** — ready for the App Store
+- **Ship with caution** — has issues worth knowing about, but nothing critical
+- **Do not ship** — has problems that could lose user data or cause crashes
+
+It reads findings from other audit tools you've run and fills in gaps they didn't cover (security, performance, accessibility, etc.).
 
 ## Quick Start
 
@@ -31,7 +42,7 @@ Coverage gaps — these domains were NOT audited:
   Model Layer: Run data-model-radar for coverage
   Navigation/UX: Run ui-path-radar for coverage
   Data Safety: Run roundtrip-radar for coverage
-  Visual Quality: Run ui-enhancer for coverage
+  Visual Quality: Run ui-enhancer-radar for coverage
 ```
 
 You still get security, test health, code hygiene, velocity tracking, and risk heatmap.
@@ -61,7 +72,7 @@ You fixed 3 issues. Run capstone again. It compares to the last run, shows your 
 | data-model-radar | Model Layer | Model grade, migration risks, relationship issues |
 | ui-path-radar | Navigation/UX | Navigation grade, dead ends, broken promises |
 | roundtrip-radar | Data Safety | Data safety grade, field loss bugs, cross-cutting patterns |
-| ui-enhancer | Visual Quality | Visual quality grade, accessibility gaps, color issues |
+| ui-enhancer-radar | Visual Quality | Visual quality grade, accessibility gaps, color issues |
 
 Plus a **Cross-Domain Risk** domain (5% weight) from correlation analysis.
 
@@ -84,25 +95,26 @@ Capstone Radar labels what it actually checked. Every grade includes verificatio
 
 | Skill | Unique Role | GitHub |
 |-------|-------------|--------|
-| **Data Model Radar** | Are your @Model definitions correct? | [data-model-radar](https://github.com/Terryc21/data-model-radar) |
-| **UI Path Radar** | Can users reach every feature? | [ui-path-radar](https://github.com/Terryc21/ui-path-radar) |
-| **Roundtrip Radar** | Does data survive the full journey? | [roundtrip-radar](https://github.com/Terryc21/roundtrip-radar) |
-| **UI Enhancer** | Does it look and feel right? | [ui-enhancer](https://github.com/Terryc21/ui-enhancer) |
-| **Capstone Radar** (this skill) | Can you ship? Unified grade + decision. | [capstone-radar](https://github.com/Terryc21/capstone-radar) |
+| **Data Model Radar** | Checks your data definitions | [data-model-radar](https://github.com/Terryc21/data-model-radar) |
+| **UI Path Radar** | Traces navigation flows | [ui-path-radar](https://github.com/Terryc21/ui-path-radar) |
+| **Roundtrip Radar** | Verifies data survives complete cycles | [roundtrip-radar](https://github.com/Terryc21/roundtrip-radar) |
+| **UI Enhancer Radar** | Reviews visual quality | [ui-enhancer-radar](https://github.com/Terryc21/ui-enhancer) |
+| **Capstone Radar** (this skill) | Gives an overall grade and release recommendation | [capstone-radar](https://github.com/Terryc21/capstone-radar) |
 
 ### How They Work Together
 
 ```
 data-model-radar  -->  ui-path-radar  -->  roundtrip-radar
- (foundation)          (navigation)        (data flows)
+ (checks your           (traces              (verifies data
+  data definitions)      navigation flows)    survives complete cycles)
                             |                   |
                             v                   v
-                               ui-enhancer
-                               (visual quality)
+                               ui-enhancer-radar
+                               (reviews visual quality)
                                      |
                                      v
                               capstone-radar
-                              (unified grade + ship/no-ship)
+                              (gives an overall grade + release recommendation)
 ```
 
 ### Recommended Audit Order
@@ -110,7 +122,7 @@ data-model-radar  -->  ui-path-radar  -->  roundtrip-radar
 1. **data-model-radar** first — verify model definitions before auditing flows
 2. **ui-path-radar** second — find all entry points and broken paths
 3. **roundtrip-radar** third — audit data flows behind those paths
-4. **ui-enhancer** fourth — polish views after structural issues are fixed
+4. **ui-enhancer-radar** fourth — polish views after structural issues are fixed
 5. **capstone-radar** last — unified grade and ship/no-ship decision
 
 Capstone is both the **entry point** (what should I audit?) and the **exit point** (can I ship?). The other radars are the deep work in between.

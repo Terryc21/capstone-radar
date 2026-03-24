@@ -21,8 +21,8 @@ It does NOT:
 
 ## Usage
 
-- `/capstone-radar` — Full audit (own domain scans + companion handoffs + grade + ship decision)
-- `/capstone-radar quick` — Own domain scans only, skip companion handoffs
+- `/capstone-radar` — Full analysis — checks everything and reads findings from other audits you've run
+- `/capstone-radar quick` — Quick check — only looks at its own areas, ignores other audit results
 - `/capstone-radar report` — No scanning, re-grade from existing handoff files only
 
 ---
@@ -38,21 +38,57 @@ On first invocation, ask the user two questions in a single `AskUserQuestion` ca
 - **Senior/Expert** — Deep expertise. Terse, file:line only, skip explanations.
 
 **Question 2: "Which audit mode?"**
-- **Full (Recommended)** — Own domain scans + consume companion handoffs + grade + ship decision
-- **Quick** — Own domain scans only, skip companion handoffs
+- **Full (Recommended)** — Full analysis — checks everything and reads findings from other audits you've run
+- **Quick** — Quick check — only looks at its own areas, ignores other audit results
 - **Report only** — No scanning, just re-grade from existing handoff files
 
 **Experience-adapted explanations for Capstone Radar:**
 
 - **Beginner**: "Capstone Radar is the final check before your app goes to the App Store. It combines results from 4 other audit tools (if you've run them) with its own security, testing, and code quality checks, then gives your whole app a letter grade and tells you if it's safe to ship. Think of it as the building inspector who reviews all the specialist reports plus checks the things no one else covered."
 
-- **Intermediate**: "Capstone Radar aggregates findings from 4 companion skills (data-model-radar, ui-path-radar, roundtrip-radar, ui-enhancer) and adds its own scans for security, test health, code hygiene, dependencies, and build health. It grades all 10 domains on one scale, tracks trends across runs, and makes a ship/no-ship recommendation."
+- **Intermediate**: "Capstone Radar aggregates findings from 4 companion skills (data-model-radar, ui-path-radar, roundtrip-radar, ui-enhancer-radar) and adds its own scans for security, test health, code hygiene, dependencies, and build health. It grades all 10 domains on one scale, tracks trends across runs, and makes a ship/no-ship recommendation."
 
 - **Experienced**: "Aggregator + gap filler for the radar family. Consumes 4 companion handoffs, owns 5 grep-reliable domains, unified A-F grading, velocity tracking, risk heatmap, ship/no-ship decision."
 
 - **Senior/Expert**: "5 owned + 4 consumed domains. Velocity. Heatmap. Ship/no-ship."
 
 Store the experience level as `USER_EXPERIENCE` and apply to ALL output for the session.
+
+---
+
+## Plain Language Communication (MANDATORY)
+
+All user-facing prompts must be understandable by someone who has never used this skill before:
+
+1. **Describe grades by what they mean** ("your backup system has a critical gap — 2 data types aren't saved") not just letter grades
+2. **Describe the ship/no-ship decision in plain terms** ("safe to release" / "has issues that should be fixed first" / "has critical problems that could lose user data")
+3. **Add an "Explain more" option** to every transition `AskUserQuestion`
+4. **Define jargon on first use:**
+   - "Companion skill" → one of the other audit tools that checks a specific area (data models, navigation, etc.)
+   - "Handoff" → a file another audit tool wrote with its findings, which this tool reads
+   - "Ship/no-ship" → whether the app is ready to release to the App Store
+   - "Domain" → an area of the codebase being graded (e.g., "Data Safety", "Navigation", "Performance")
+5. **Exception:** If user selected Senior/Expert experience level, terse references are acceptable
+
+### Final Report Prompt Template
+
+```
+## Release Readiness: [SHIP / SHIP WITH CAUTION / DO NOT SHIP]
+
+**Overall Grade: [letter]** — [one plain sentence explaining what this means]
+
+Top issues to address:
+1. [plain description] — [urgency]
+2. [plain description] — [urgency]
+
+Areas of strength:
+- [plain description]
+
+You can:
+1. **See the full report** — detailed grades for all [N] areas
+2. **Start fixing critical issues** — [one-line description of what gets fixed first]
+3. **Explain more** — I'll walk through what each grade means
+```
 
 ---
 
@@ -129,7 +165,7 @@ Read handoff files from all 4 companion skills:
 Read .agents/ui-audit/data-model-radar-handoff.yaml (if exists)
 Read .agents/ui-audit/ui-path-radar-handoff.yaml (if exists)
 Read .agents/ui-audit/roundtrip-radar-handoff.yaml (if exists)
-Read .agents/ui-audit/ui-enhancer-handoff.yaml (if exists)
+Read .agents/ui-audit/ui-enhancer-radar-handoff.yaml (if exists)
 ```
 
 For each handoff found:
@@ -149,7 +185,7 @@ For each handoff found:
 
 Print companion status:
 ```
-Companions: data-model-radar [found/missing] | ui-path-radar [found/missing] | roundtrip-radar [found/missing] | ui-enhancer [found/missing]
+Companions: data-model-radar [found/missing] | ui-path-radar [found/missing] | roundtrip-radar [found/missing] | ui-enhancer-radar [found/missing]
 ```
 
 **Skip this step if mode = Quick.**
@@ -326,7 +362,7 @@ If roundtrip-radar handoff includes `cross_cutting_patterns[]`, incorporate them
 | Model Layer | data-model-radar handoff | 10% |
 | Navigation/UX | ui-path-radar handoff | 10% |
 | Data Safety | roundtrip-radar handoff | 15% |
-| Visual Quality | ui-enhancer handoff | 10% |
+| Visual Quality | ui-enhancer-radar handoff | 10% |
 | Cross-Domain Risk | Correlation analysis | 5% |
 
 **Weight redistribution:** When domains are unaudited (missing companion handoff), divide their total weight proportionally among audited domains. Example: if Data Safety (15%) and Visual Quality (10%) are missing, remaining 75% becomes 100%. Code Hygiene's 10% becomes 10/75 = 13.3%.
@@ -613,7 +649,7 @@ for_ui_path_radar:
       grade: "<letter>"
       reason: "<specific issues found>"
 
-for_ui_enhancer:
+for_ui_enhancer_radar:
   priority_views:
     - domain: "<e.g., Visual Quality>"
       grade: "<letter>"
@@ -626,7 +662,7 @@ for_data_model_radar:
       reason: "<specific model issues>"
 ```
 
-**Fire-and-forget:** Always write this file regardless of whether other skills are installed.
+**Automatic:** This file is always written so other audit skills can pick up where this one left off. No user action needed.
 
 ### Follow-up Options
 
@@ -703,14 +739,14 @@ Step time estimates:
 | data-model-radar | Are your @Model definitions correct? |
 | ui-path-radar | Can users reach every feature? |
 | roundtrip-radar | Does data survive the full journey? |
-| ui-enhancer | Does it look and feel right? |
+| ui-enhancer-radar | Does it look and feel right? |
 | **capstone-radar** (this skill) | Can you ship? Unified grade + decision. |
 
 **Recommended audit order:**
 1. data-model-radar (foundation — model layer)
 2. ui-path-radar (navigation paths)
 3. roundtrip-radar (data flows)
-4. ui-enhancer (visual quality)
+4. ui-enhancer-radar (visual quality)
 5. capstone-radar (unified grade + ship decision)
 
 Capstone is both the **entry point** ("what should I audit?") and the **exit point** ("can I ship?"). The other radars are the deep work in between.
