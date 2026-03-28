@@ -177,6 +177,58 @@ A solo developer's codebase reflects multiple versions of themselves — early c
 
 ---
 
+## Audit Methodology (MANDATORY — governs scanning)
+
+Three principles to minimize false negatives. These apply before domain-specific scanning begins.
+
+### Principle 1: Enumerate-Then-Verify
+
+For domains tagged `enumerate-required`: list ALL candidate files first, then verify each uses the correct pattern. Do NOT rely on grep alone to discover violations.
+
+```
+WRONG (search-and-hope):
+  1. Grep for known anti-pattern → 2. Report matches → 3. Grade
+
+RIGHT (enumerate-then-verify):
+  1. Enumerate ALL files containing the subject
+  2. Subtract verified-clean skip list
+  3. For EACH file, verify correct pattern exists
+  4. Report files where correct pattern is MISSING
+```
+
+**Why:** Grep finds what you search for but cannot find what you don't search for. A violation may have no searchable code signature (e.g., an element that inherits default styling with no explicit code). Grep-only scanning missed 57% of violations in real-world testing.
+
+**When to use:** Apply to domains where violations can be the absence of a correct pattern, not just the presence of a wrong one. Domains where every violation has a unique searchable signature (force unwraps, hardcoded strings) remain `grep-sufficient`.
+
+### Principle 2: File-Scoped Skip Lists
+
+A resolved finding applies to THAT FILE ONLY. Files that call, import, or depend on a resolved file need independent verification. Do not propagate "clean" status across a call graph.
+
+**Why:** Marking a helper file as "fixed" caused an audit to skip 8 view files that used the helper. The helper was fixed. The views calling it weren't.
+
+### Principle 3: Negative Pattern Matching
+
+To find "X without Y," search for X first, then verify Y exists around it. If neither correct pattern nor anti-pattern is found, that is a negative match.
+
+**Negative match ranking (3 tiers):**
+
+| Tier | Name | Criteria | Presentation |
+|------|------|----------|-------------|
+| A | Almost certain | Same file has verified violations OR sibling files use correct pattern | Present with verified findings |
+| B | Probable | View/file type strongly implies the pattern applies | "Likely needs fixing" section |
+| C | Possible | Subject exists without correct pattern, but context is ambiguous | "Review these" section |
+
+**Ranking factors (in priority order):**
+1. Proximity to verified violations in the same file (highest signal)
+2. Sibling file consistency (do similar files use the correct pattern?)
+3. View type / context (settings rows vs system picker options vs status badges)
+4. Element size / prominence (large prominent elements vs small subtle indicators)
+5. Code recency via git blame (recent edits more likely missed the pattern)
+
+**For projects without a style guide:** Infer conventions from codebase majority patterns. Tag findings as `inferred-convention` (Tier B max). After the audit, offer to generate a starter CLAUDE.md from inferred conventions.
+
+---
+
 ## Terminal Width Check (MANDATORY — run first)
 
 Before ANY output, check terminal width:
