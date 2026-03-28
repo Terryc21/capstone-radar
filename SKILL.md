@@ -198,7 +198,7 @@ RIGHT (enumerate-then-verify):
 
 **Why:** Grep finds what you search for but cannot find what you don't search for. A violation may have no searchable code signature (e.g., an element that inherits default styling with no explicit code). Grep-only scanning missed 57% of violations in real-world testing.
 
-**When to use:** Apply to domains where violations can be the absence of a correct pattern, not just the presence of a wrong one. Domains where every violation has a unique searchable signature (force unwraps, hardcoded strings) remain `grep-sufficient`.
+**When to use:** Apply to domains where violations can be the absence of a correct pattern, not just the presence of a wrong one. Domains where every violation has a unique searchable signature (force unwraps, hardcoded strings) remain `grep-sufficient`. Scan-method tags (`grep-sufficient`, `enumerate-required`, `mixed`) are on each domain heading below.
 
 ### Principle 2: File-Scoped Skip Lists
 
@@ -384,7 +384,7 @@ Run grep-based scans for the 5 domains capstone owns. Apply Verification Rule (S
 
 ### Shared Grep Patterns
 
-**Code Hygiene:**
+**Code Hygiene** `grep-sufficient`:
 ```
 Grep pattern="// TODO|// FIXME|// HACK|// XXX" glob="**/*.swift" output_mode="count"
 Grep pattern="as!" glob="**/*.swift"
@@ -392,7 +392,7 @@ Grep pattern="try!" glob="**/*.swift"
 ```
 Also check file sizes: `Glob pattern="**/*.swift"` then read line counts for files that appear large. Flag files >1000 lines.
 
-**Test Health:**
+**Test Health** `grep-sufficient`:
 ```
 Grep pattern="import Testing" glob="**/*Test*.swift" output_mode="count"
 Grep pattern="import XCTest" glob="**/*Test*.swift" output_mode="count"
@@ -402,14 +402,14 @@ Glob pattern="**/*Test.swift"
 ```
 Calculate test-to-source ratio: test files / (total swift files - test files).
 
-**Security Basics:**
+**Security Basics** `grep-sufficient`:
 ```
 Grep pattern="(api[_-]?key|secret[_-]?key|password|token)\s*[:=]\s*[\"'][^\"']+[\"']" glob="**/*.swift" -i
 Grep pattern="UserDefaults.*\.(password|token|secret|apiKey)" glob="**/*.swift" -i
 Grep pattern="http://(?!localhost|127\.0\.0\.1)" glob="**/*.swift"
 ```
 
-**Dependency Health:**
+**Dependency Health** `grep-sufficient`:
 ```bash
 stat -f "%Sm" -t "%Y-%m-%d" Package.resolved 2>/dev/null || echo "no Package.resolved"
 ```
@@ -418,7 +418,7 @@ Grep pattern="\.exact\(|\.upToNextMajor\(|\.upToNextMinor\(|from:" path="Package
 ```
 Count packages in Package.resolved.
 
-**Build Health:**
+**Build Health** `grep-sufficient`:
 ```bash
 find . -name "*.xcscheme" -not -path "*/.build/*" | wc -l
 ```
