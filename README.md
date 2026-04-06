@@ -1,5 +1,7 @@
 # Capstone Radar
 
+![Visitors](https://komarev.com/ghpvc/?username=Terryc21&repo=capstone-radar&label=visitors&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Terryc21/capstone-radar?style=flat) ![GitHub forks](https://img.shields.io/github/forks/Terryc21/capstone-radar?style=flat)
+
 > Unified A-F grading and ship/no-ship decisions for the 5-skill radar family. Aggregates companion findings, scans 5 own domains, tracks velocity, celebrates improvements.
 
 ## Moved to Radar Suite
