@@ -1,27 +1,44 @@
-# Capstone Radar
+# capstone-radar
 
-![Visitors](https://komarev.com/ghpvc/?username=Terryc21&repo=capstone-radar&label=visitors&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Terryc21/capstone-radar?style=flat) ![GitHub forks](https://img.shields.io/github/forks/Terryc21/capstone-radar?style=flat)
+**This skill has moved.** It now lives inside [radar-suite](https://github.com/Terryc21/radar-suite), a bundle of six audit skills for iOS/macOS Swift apps. Installing the bundle is the intended experience because the skills work together: they share findings, update each other's reports, and feed into a unified ship-or-don't-ship grade.
 
-> Unified A-F grading and ship/no-ship decisions for the 5-skill radar family. Aggregates companion findings, scans 5 own domains, tracks velocity, celebrates improvements.
+## What `capstone-radar` does
 
-## Moved to Radar Suite
+It's the final step in a radar-suite audit. After the other five radar skills finish their scans, capstone-radar gathers their findings, runs five checks of its own, and writes a single A-F report grouped into "Fix Before Shipping" (release-blocking issues) and "Hygiene Backlog" (everything else, doesn't affect the grade). Tracks velocity over time and celebrates fixes between runs.
 
-This skill is now maintained as part of **[Radar Suite](https://github.com/Terryc21/radar-suite)** — all 5 audit skills in one install.
+## How to install (via radar-suite)
 
-```bash
-git clone https://github.com/Terryc21/radar-suite.git
-cd radar-suite
-./install.sh
+Two commands in Claude Code, run one at a time:
+
+```
+/plugin marketplace add Terryc21/radar-suite
 ```
 
-The 5 skills are deeply interdependent — they update each other's findings, share a deferred-items tracker, and feed into a unified grade. Installing them together is the intended experience.
+```
+/plugin install radar-suite@radar-suite
+```
 
-### Audit methodology
+That's it. capstone-radar is now available as `/capstone-radar`, along with the other five audit skills.
 
-The skill follows three scanning principles to minimize false negatives:
+## Why the standalone repo still exists
 
-1. **Enumerate-then-verify** — For domains where violations can lack searchable code signatures, the skill lists all candidate files and verifies each one rather than relying on grep alone. This addresses the 57% miss rate observed in grep-only audits. All 5 owned domains are tagged `grep-sufficient` — every violation has a searchable code signature.
-2. **File-scoped skip lists** — A resolved finding applies to that file only. Callers and dependents of a fixed file need independent verification.
-3. **Negative pattern matching** — The skill searches for subjects, then verifies the correct pattern exists around them. Findings from absent patterns are ranked into three confidence tiers (Almost certain / Probable / Possible) and presented separately from verified findings.
+So that anyone who finds this URL through an old link, blog post, or cached search result lands on a clear pointer to the current home. Old `git clone` commands against this repo still work; they just clone a near-empty redirect.
 
-See [FIDELITY.md](https://github.com/Terryc21/radar-suite/blob/main/FIDELITY.md) for the design philosophy behind the audit approach.
+## Other Claude Code skills I've built
+
+- [radar-suite](https://github.com/Terryc21/radar-suite) — the bundle this skill lives inside now
+- [code-smarter](https://github.com/Terryc21/code-smarter) — annotated tutorials from your own codebase
+- [prompter](https://github.com/Terryc21/prompter) — rewrites prompts for clarity before Claude acts
+- [bug-echo](https://github.com/Terryc21/bug-echo) — finds sibling bugs after a fix
+- [bug-prospector](https://github.com/Terryc21/bug-prospector) — finds bugs in code that compiles fine but breaks on real-world input
+- [workflow-audit](https://github.com/Terryc21/workflow-audit) — 5-layer audit of SwiftUI user flows
+
+All free, all Apache 2.0, all built while shipping [Stuffolio](https://stuffolio.app).
+
+## License
+
+Apache 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+## Author
+
+Terry Nyberg, [Coffee & Code LLC](https://stuffolio.app/).
