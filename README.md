@@ -27,7 +27,7 @@ So that anyone who finds this URL through an old link, blog post, or cached sear
 ## Other Claude Code skills I've built
 
 - [radar-suite](https://github.com/Terryc21/radar-suite) — the bundle this skill lives inside now
-- [code-smarter](https://github.com/Terryc21/code-smarter) — annotated tutorials from your own codebase
+- [tutorial-creator](https://github.com/Terryc21/tutorial-creator) — turns a file from your project into an annotated tutorial with vocabulary tracking, pre/post tests, and gap analysis
 - [prompter](https://github.com/Terryc21/prompter) — rewrites prompts for clarity before Claude acts
 - [bug-echo](https://github.com/Terryc21/bug-echo) — finds sibling bugs after a fix
 - [bug-prospector](https://github.com/Terryc21/bug-prospector) — finds bugs in code that compiles fine but breaks on real-world input
